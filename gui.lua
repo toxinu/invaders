@@ -3,70 +3,70 @@ local class = require 'libs/middleclass'
 -- Button
 local Button = class('Button')
 function Button:initialize(text, slug, font, x, y, callback)
-    self.text = text
-    self.slug = slug
-    self.font = font
-    self.x = x
-    self.y = y
-    self.callback = callback
-    self.color = self:unhover()
+  self.text = text
+  self.slug = slug
+  self.font = font
+  self.x = x
+  self.y = y
+  self.callback = callback
+  self.color = self:unhover()
 end
 function Button:draw()
-    love.graphics.setFont(self.font)
-    love.graphics.setColor(self.color)
-    love.graphics.print(self.text, self.x, self.y)
+  love.graphics.setFont(self.font)
+  love.graphics.setColor(self.color)
+  love.graphics.print(self.text, self.x, self.y)
 end
 function Button:getWidth()
-    return self.font:getWidth(self.text)
+  return self.font:getWidth(self.text)
 end
 function Button:getHeight()
-    return self.font:getHeight(self.text)
+  return self.font:getHeight(self.text)
 end
 function Button:pressed()
-    return self.callback()
+  return self.callback()
 end
 function Button:hover()
-    self.color = {36, 255, 0, 255}
+  self.color = {36, 255, 0, 255}
 end
 function Button:unhover()
-    self.color = {255, 255, 255, 255}
+  self.color = {255, 255, 255, 255}
 end
 
 -- Menu
 local Menu = class('Menu')
 function Menu:initialize(global)
-    self.buttons = {}
-    self.global = global
+  self.buttons = {}
+  self.global = global
 end
 function Menu:addButton(button)
-    table.insert(self.buttons, button)
+  table.insert(self.buttons, button)
 end
 function Menu:draw()
-    for i, v in ipairs(self.buttons) do
-        v:draw()
-    end
+  for i, v in ipairs(self.buttons) do
+    v:draw()
+  end
 end
 function Menu:update(dt)
-    for i, button in ipairs(self.buttons) do
-        if  love.mouse:getX() < button.x + button:getWidth() and
-                button.x < love.mouse:getX() and
-                love.mouse:getY() < button.y + button:getHeight() and
-                button.y < love.mouse:getY() then
-            button:hover()
-        else
-            button:unhover()
-        end
+  for i, button in ipairs(self.buttons) do
+    if  love.mouse:getX() < button.x + button:getWidth() and
+        button.x < love.mouse:getX() and
+        love.mouse:getY() < button.y + button:getHeight() and
+        button.y < love.mouse:getY() then
+      button:hover()
+    else
+      button:unhover()
     end
+  end
 end
 function Menu:mousepressed(x, y)
-    for i, button in ipairs(self.buttons) do
-        if  x < button.x + button:getWidth() and
-                button.x < x and
-                y < button.y + button:getHeight() and
-                button.y < y then
-            button:pressed()
-        end
+  for i, button in ipairs(self.buttons) do
+    if  x < button.x + button:getWidth() and
+        button.x < x and
+        y < button.y + button:getHeight() and
+        button.y < y then
+      button:pressed()
     end
+  end
 end
 
 local exports = {}

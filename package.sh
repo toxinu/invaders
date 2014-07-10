@@ -6,6 +6,11 @@ LOVE_VERSION="0.9.1"
 BUILD_DIR=$(pwd)"/build"
 TMP_DIR=$BUILD_DIR"/tmp"
 
+if [[ $1 == "osx" ]]; then
+    echo "Building $1 binary..."
+    echo "Nothing to do."
+    echo "Done."
+fi
 
 if [[ $1 == "win32" ]] || [[ $1 == "win64" ]]; then
     echo "Building $1 binary..."
