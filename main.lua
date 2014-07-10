@@ -25,7 +25,7 @@ function love.load()
   global.menu = Menu:new(global)
   local play_callback = function ()
     -- World
-    global.world = World:new()
+    global.world = World:new(global)
     global.world:populate()
     global.gamestate = "play"
   end
@@ -39,12 +39,8 @@ function love.load()
 end
 
 function love.update(dt)
-  if love.keyboard.isDown("escape") then
-    if global.gamestate == "play" then
+  if love.keyboard.isDown("escape") and global.gamestate == "play" then
       global.gamestate = "overlay"
-    else
-      global.gamestate = "menu"
-    end
   end
   if global.gamestate == "menu" then
     global.menu:update(dt)
@@ -69,6 +65,8 @@ end
 
 function love.mousepressed(x, y)
   if global.gamestate == "menu" then
-      global.menu:mousepressed(x, y)
+    global.menu:mousepressed(x, y)
+  elseif global.gamestate == "overlay" then
+    global.world:mousepressed(x, y)
   end
 end

@@ -1,9 +1,14 @@
 local class = require 'libs/middleclass'
+local gui = require 'gui'
+
+local Menu = gui.Menu
+local Button = gui.Button
+
 
 -- Entity
 local Entity = class('Entity')
-function Entity:initialize(world)
-  self.world = world
+function Entity:initialize(global)
+  self.global = global
   self.height = 30
   self.width = 15
   self.x = 300
@@ -43,8 +48,8 @@ local Shot = class('Shot', Entity)
 
 -- Player
 local Player = class('Player', Entity)
-function Player:initialize(world)
-  Entity.initialize(self, world)
+function Player:initialize(global)
+  Entity.initialize(self, global)
   self.x = 200
   self.y = 520
   self.speed = 150
@@ -89,8 +94,8 @@ end
 
 -- Mob
 local Mob = class('Mob', Entity)
-function Mob:initialize(world)
-  Entity.initialize(self, world)
+function Mob:initialize(global)
+  Entity.initialize(self, global)
   self.speed = 40
 
   self:addImage("assets/images/mob.png")
@@ -122,24 +127,44 @@ end
 
 -- World
 local World = class('World')
-function World:initialize()
+function World:initialize(global)
+  self.global = global
+  self.overlay = Menu:new(global)
   self.entities = {}
   self.color = {255, 255, 255, 255}
   self.width = 800
   self.ground = 550
-  self.height = 1
+  self.height = 600
   self.stop = false
   self.win = false
+
+  self.overlay:addButton(
+    Button:new(
+      "Resume",
+      "resume",
+      global.fonts['normal'],
+      200,
+      400,
+      function() global.gamestate = "play" end))
+  self.overlay:addButton(
+    Button:new(
+      "Quit",
+      "quit",
+      global.fonts['normal'],
+      200,
+      450,
+      function() love.event.quit() end))
+  self.overlay.background_color = {255, 255, 255, 40}
 end
 function World:populate()
   -- Player
-  self:addEntity(Player:new(global.world))
+  self:addEntity(Player:new(self.global.world))
   -- Mobs
   local x_offset = 20
   local y_offset = 50
   local column = 1
   for i = 1, 24 do
-    local mob = Mob:new(global.world)
+    local mob = Mob:new(self.global.world)
     mob.width = 40
     mob.height = 20
     mob.x = column * (mob.width + x_offset)
@@ -179,8 +204,17 @@ function World:draw()
   for k, v in pairs(self.entities) do
     v:draw()
   end
+
+  if self.global.gamestate == "overlay" then
+    self.overlay:draw()
+  end
 end
 function World:update(dt)
+  if self.global.gamestate == "overlay" then
+    self.overlay:update(dt)
+    return
+  end
+
   -- Interate on all entities
   for k, v in pairs(self.entities) do
     v:update(dt)
@@ -210,6 +244,9 @@ function World:keyreleased(key)
       v:keyreleased(key)
     end
   end
+end
+function World:mousepressed(x, y)
+  self.overlay:mousepressed(x, y)
 end
 
 -- Exports
