@@ -121,7 +121,7 @@ function Mob:update(dt)
   self:randomMove(dt)
 
   if self.y + self.height >= 550 then
-    self.world.loose = true
+    self.global.world.loose = true
   end
 end
 
