@@ -133,9 +133,8 @@ if [[ $1 == "osx" ]]; then
 
     echo "Done."
     cd $INITIAL_DIR
-fi
 
-if [[ $1 == "win32" ]] || [[ $1 == "win64" ]]; then
+elif [[ $1 == "win32" ]] || [[ $1 == "win64" ]]; then
     echo "Building $1 binary..."
     INITIAL_DIR=$(pwd)
 
@@ -185,4 +184,19 @@ if [[ $1 == "win32" ]] || [[ $1 == "win64" ]]; then
     echo "Package created. $BUILD_DIR/$GAME_NAME-$1.zip"
     echo "Done."
     cd $INITIAL_DIR
+elif [[ $1  == "love" ]]; then
+    echo "Building $1 binary..."
+    INITIAL_DIR=$(pwd)
+
+    # Make .love
+    cd $BUILD_DIR/..
+    if [[ -f "$GAME_NAME.love" ]]; then
+        rm $GAME_NAME.love
+    fi
+    zip -9 -q -x=build/* -r $BUILD_DIR/$GAME_NAME.love .
+    echo "Package created. $BUILD_DIR/$GAME_NAME.$1"
+    echo "Done."
+    cd $INITIAL_DIR
+else
+    echo "Usage: ./package.sh [win32|win64|osx|love]"
 fi
