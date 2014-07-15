@@ -24,6 +24,9 @@ function love.load()
   love.graphics.setFont(global.fonts['normal'])
 
   -- Save
+  if not love.filesystem.exists("invaders.sav") then
+    love.filesystem.write("invaders.sav", Tserial.pack({score=0}))
+  end
   global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
 
   -- Gamestate

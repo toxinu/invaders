@@ -17,7 +17,8 @@ function World:initialize(global)
   self.overlay = Menu:new(global)
   self.mobs = {}
   self.player = nil
-  self.color = {255, 255, 255, 255}
+  self.color = {29, 30, 26, 255}
+  self.ground_color = {255, 255, 255, 255}
   self.width = 600
   self.ground = 550
   self.height = 600
@@ -94,6 +95,9 @@ function World:addEntity(entity)
 end
 function World:draw()
   love.graphics.setColor(self.color)
+  love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+
+  love.graphics.setColor(self.ground_color)
   love.graphics.rectangle("fill", 0, self.ground, self.width, self.height)
 
   love.graphics.setColor(0, 0, 0, 255)
@@ -104,7 +108,8 @@ function World:draw()
     'Shots: ' .. self.player.total_shots .. '  ',
     10,
     self.height - 35)
-  love.graphics.setColor(self.color)
+
+  love.graphics.setColor(255, 255, 255, 255)
 
   if self.loose then
     love.graphics.setColor(255, 255, 255, 255)

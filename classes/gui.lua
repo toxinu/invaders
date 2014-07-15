@@ -37,7 +37,7 @@ local Menu = class('Menu')
 function Menu:initialize(global)
   self.buttons = {}
   self.global = global
-  self.background_color = {29, 30, 26, 255  }
+  self.background_color = {29, 30, 26, 255}
 end
 function Menu:addButton(button)
   table.insert(self.buttons, button)
