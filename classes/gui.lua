@@ -26,7 +26,7 @@ function Button:pressed()
   return self.callback()
 end
 function Button:hover()
-  self.color = {36, 255, 0, 255}
+  self.color = {58, 102, 80, 255}
 end
 function Button:unhover()
   self.color = {255, 255, 255, 255}
@@ -37,7 +37,7 @@ local Menu = class('Menu')
 function Menu:initialize(global)
   self.buttons = {}
   self.global = global
-  self.background_color = {}
+  self.background_color = {29, 30, 26, 255  }
 end
 function Menu:addButton(button)
   table.insert(self.buttons, button)
@@ -45,11 +45,17 @@ end
 function Menu:draw()
   if table.getn(self.background_color) == 4 then
     love.graphics.setColor(self.background_color)
-    love.graphics.rectangle("fill", 0, 0, global.world.width, 600)
+    love.graphics.rectangle("fill", 0, 0, 600, 600)
     love.graphics.setColor(255, 255, 255, 255)
   end
   for i, v in ipairs(self.buttons) do
     v:draw()
+  end
+
+  if self.global.gamestate == "menu" then
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.print("Invaders!", 100, 300)
   end
 end
 function Menu:update(dt)

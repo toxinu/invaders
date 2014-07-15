@@ -1,24 +1,32 @@
-local classes = require 'classes'
-local gui = require 'gui'
+local entity = require 'classes/entity'
+local world = require 'classes/world'
+local gui = require 'classes/gui'
+local Tserial = require 'libs/Tserial'
 
-local Mob = classes.Mob
-local World = classes.World
-local Player = classes.Player
-
+local Mob = entity.Mob
+local Player = entity.Player
+local World = world.World
 local Menu = gui.Menu
 local Button = gui.Button
 
 
 function love.load()
+  love.window.setMode(600, 600, {vsync=true, resizable=false})
+  love.filesystem.setIdentity("Invaders")
+
   global = {}
   global.fonts = {
+    tiny = love.graphics.newFont('assets/fonts/superscript.ttf', 20),
+    small = love.graphics.newFont('assets/fonts/superscript.ttf', 30),
     normal = love.graphics.newFont('assets/fonts/superscript.ttf', 50)}
 
   love.window.setTitle('Invaders by socketubs')
   love.graphics.setFont(global.fonts['normal'])
 
+  -- Save
+  global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
+
   -- Gamestate
-  -- menu/play
   global.gamestate = "menu"
 
   -- Menu
@@ -33,9 +41,9 @@ function love.load()
     love.event.quit()
   end
   global.menu:addButton(
-    Button:new("Play", "play", global.fonts['normal'], 100, 400, play_callback))
+    Button:new("Play", "play", global.fonts['small'], 100, 400, play_callback))
   global.menu:addButton(
-    Button:new("Exit", "exit", global.fonts['normal'], 100, 450, exit_callback))
+    Button:new("Exit", "exit", global.fonts['small'], 100, 430, exit_callback))
 end
 
 function love.update(dt)
@@ -52,6 +60,7 @@ end
 function love.draw()
   if global.gamestate == "menu" then
     global.menu:draw()
+
   else
     global.world:draw()
   end
