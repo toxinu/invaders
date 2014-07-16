@@ -27,6 +27,7 @@ function love.load()
     music = love.audio.newSource('assets/sfx/music.mp3', 'stream')
   }
 
+  global.sounds['music']:setLooping(true)
   love.audio.play(global.sounds['music'])
 
   love.window.setTitle('Invaders by socketubs')
