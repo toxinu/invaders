@@ -14,7 +14,7 @@ function Player:initialize(global)
   self.speed = 150
   self.shots = {}
 
-  self:addImage("assets/images/player.png")
+  self:addImage("assets/images/player.png", 29, 18, 0.1)
 end
 function Player:shot()
   local shot = Shot:new()
@@ -33,6 +33,8 @@ function Player:keypressed(key)
   end
 end
 function Player:update(dt)
+  Entity.update(self, dt)
+
   if love.keyboard.isDown("left") then
     local x = self.x - self.speed * dt
     if x > 0 then

@@ -1,5 +1,6 @@
 local class = require 'libs/middleclass'
 local gui = require 'classes/gui'
+local AnAL = require('libs/AnAL')
 
 local Menu = gui.Menu
 local Button = gui.Button
@@ -16,7 +17,10 @@ function Entity:initialize(global)
   self.color = {255, 255, 0, 255}
 end
 function Entity:draw()
-  if self.image and self.quad then
+  if self.animation then
+    love.graphics.setColor(255, 255, 255, 255)
+    self.animation:draw(self.x, self.y)
+  elseif self.image and self.quad then
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(self.image, self.quad, self.x, self.y)
   else
@@ -25,22 +29,23 @@ function Entity:draw()
     love.graphics.setColor(255, 255, 255, 255)
   end
 end
-function Entity:addImage(image_path)
+function Entity:addImage(image_path, width, height, delay)
   self.image = love.graphics.newImage(image_path)
-  self.width = self.image:getWidth()
-  self.height = self.image:getHeight()
-  self.quad = love.graphics.newQuad(
-    0, 0,
-    self.image:getWidth(),
-    self.image:getHeight(),
-    self.image:getWidth(),
-    self.image:getHeight())
+  self.animation = newAnimation(self.image, width, height, delay, 0)
+  self.width = width
+  self.height = height
+  self.quad = love.graphics.newQuad(0, 0, width, height, width, height)
 end
 function Entity:collide(entity)
   return  self.x < entity.x + entity.width and
           entity.x < self.x + self.width and
           self.y < entity.y + entity.height and
           entity.y < self.y + self.height
+end
+function Entity:update(dt)
+  if self.animation then
+    self.animation:update(dt)
+  end
 end
 
 -- Shot
@@ -50,30 +55,16 @@ local Shot = class('Shot', Entity)
 local Mob = class('Mob', Entity)
 function Mob:initialize(global)
   Entity.initialize(self, global)
+
   self.speed = 20
   self.shots = {}
   self.dead = false
   self.show_counter = 0
-  self:addImage("assets/images/mob.png")
-end
-function Mob:randomMove(dt)
-  -- Delete this shit
-  local horizontal_move = math.random(1, 2)
-  if horizontal_move == 1 then
-    self.x = self.x - self.speed * dt
-  elseif horizontal_move == 2 then
-    self.x = self.x + self.speed * dt
-  end
-  local vertical_move = math.random(1, 2)
-  if vertical_move == 1 then
-    self.y = self.y - self.speed * dt
-  elseif vertical_move == 2 then
-    self.y = self.y + self.speed * dt
-  end
-
-  self.y = self.y + self.speed * dt
+  self:addImage("assets/images/mob.png", 24, 18, 0.5)
 end
 function Mob:update(dt, direction)
+  Entity.update(self, dt)
+
   for k, v in pairs(self.shots) do
     v.y = v.y + v.speed * dt
     if v.y + v.height > self.global.world.ground then
