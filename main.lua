@@ -51,13 +51,13 @@ function love.load()
     global.world.start = true
     global.gamestate = "play"
   end
-  local exit_callback = function ()
+  local quit_callback = function ()
     love.event.quit()
   end
   global.menu:addButton(
     Button:new("Play", "play", global.fonts['small'], 100, 400, play_callback))
   global.menu:addButton(
-    Button:new("Exit", "exit", global.fonts['small'], 100, 430, exit_callback))
+    Button:new("Quit", "quit", global.fonts['small'], 100, 430, quit_callback))
   global.menu:addButton(
     Button:new(
       "Developed by socketubs",

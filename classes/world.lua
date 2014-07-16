@@ -36,8 +36,7 @@ function World:initialize(global)
   -- Level settings
   self.score = 0
   self.speed_step = 2.5
-  -- self.mob_number = 49
-  self.mob_number = 1
+  self.mob_number = 49
   self.mob_speed = 60
   self.mob_score = 50
 
@@ -50,7 +49,7 @@ function World:initialize(global)
       "Resume",
       "resume",
       global.fonts['small'],
-      250,
+      230,
       300,
       function() global.gamestate = "play" end))
   self.overlay:addButton(
@@ -58,7 +57,7 @@ function World:initialize(global)
       "Menu",
       "menu",
       global.fonts['small'],
-      250,
+      230,
       330,
       function() global.gamestate = "menu" end))
   self.overlay:addButton(
@@ -66,7 +65,7 @@ function World:initialize(global)
       "Quit",
       "quit",
       global.fonts['small'],
-      250,
+      230,
       360,
       function() love.event.quit() end))
   self.overlay.background_color = {0, 0, 0, 200}
@@ -108,7 +107,8 @@ function World:draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(self.global.fonts['normal'])
     love.graphics.print('You loose!', 100, 200)
-    love.graphics.setColor(self.color)
+    love.graphics.setFont(self.global.fonts['tiny'])
+    love.graphics.print('Press escape to continue.', 100, 280)
   end
 
   if self.win then
@@ -121,7 +121,7 @@ function World:draw()
       '-' .. math.floor(self.elapsed_time) .. 'x5' ..
       '=' .. self.total_score .. '!'
     love.graphics.print(msg, 100, 250)
-    love.graphics.setColor(self.color)
+    love.graphics.print('Press escape to continue.', 100, 290)
   end
 
   -- Mobs
@@ -286,7 +286,11 @@ function World:keypressed(key, isrepeat)
   if self.global.gamestate == "overlay" and key == "escape" then
     self.global.gamestate = "play"
   elseif self.global.gamestate == "play" and key == "escape" then
-    self.global.gamestate = "overlay"
+    if self.loose or self.win then
+      self.global.gamestate = "menu"
+    else
+      self.global.gamestate = "overlay"
+    end
   end
 end
 function World:mousepressed(x, y)

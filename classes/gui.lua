@@ -56,6 +56,10 @@ function Menu:draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(self.global.fonts['normal'])
     love.graphics.print("Invaders!", 100, 300)
+  elseif self.global.gamestate == "overlay" then
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.print("-- Pause --", 150, 200)
   end
 end
 function Menu:update(dt)
