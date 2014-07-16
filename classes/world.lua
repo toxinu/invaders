@@ -1,5 +1,6 @@
 local class = require 'libs/middleclass'
 local Tserial = require 'libs/Tserial'
+local utils = require 'libs/utils'
 
 local gui = require 'classes/gui'
 local entity = require 'classes/entity'
@@ -122,12 +123,11 @@ function World:draw()
     love.graphics.setFont(self.global.fonts['normal'])
     love.graphics.print('You win!', 100, 200)
     love.graphics.setFont(self.global.fonts['tiny'])
-    love.graphics.print(
-      'Total score: ' .. self.player.score ..
+    local msg = 'Total score: ' .. self.player.score ..
       '-' .. self.player.total_shots .. 'x2' ..
       '-' .. math.floor(self.elapsed_time) ..
-      '=' .. self.total_score .. '!',
-      100, 250)
+      '=' .. self.total_score .. '!'
+    love.graphics.print(msg, 100, 250)
     love.graphics.setColor(self.color)
   end
 
@@ -207,6 +207,7 @@ function World:update(dt)
             table.remove(self.mobs, kk)
             table.remove(self.player.shots, k)
             self.player.score = self.player.score + v.score
+            love.audio.play(self.global.sounds['explosion'])
             -- Change mobs speed
             for kk, vv in pairs(self.mobs) do
               vv.speed = vv.speed + self.speed_step
