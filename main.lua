@@ -68,9 +68,6 @@ function love.load()
 end
 
 function love.update(dt)
-  if love.keyboard.isDown("escape") and global.gamestate == "play" then
-      global.gamestate = "overlay"
-  end
   if global.gamestate == "menu" then
     global.menu:update(dt)
   else
@@ -87,9 +84,13 @@ function love.draw()
   end
 end
 
-function love.keyreleased(key)
-  if global.gamestate == "play" then
-    global.world:keyreleased(key)
+function love.keypressed(key, isrepeat)
+  if global.gamestate == "play" or global.gamestate == "overlay" then
+    global.world:keypressed(key, isrepeat)
+  elseif global.gamestate == "menu" then
+    if key == "escape" then
+      love.event.quit()
+    end
   end
 end
 

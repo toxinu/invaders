@@ -17,6 +17,7 @@ function Entity:initialize(global)
 end
 function Entity:draw()
   if self.image and self.quad then
+    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(self.image, self.quad, self.x, self.y)
   else
     love.graphics.setColor(self.color)

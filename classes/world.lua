@@ -36,7 +36,8 @@ function World:initialize(global)
   -- Level settings
   self.score = 0
   self.speed_step = 2.5
-  self.mob_number = 49
+  -- self.mob_number = 49
+  self.mob_number = 1
   self.mob_speed = 60
   self.mob_score = 50
 
@@ -99,26 +100,14 @@ function World:addEntity(entity)
   table.insert(self.mobs, entity)
 end
 function World:draw()
+  -- Background
   love.graphics.setColor(self.color)
   love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 
-  love.graphics.setColor(self.ground_color)
-  love.graphics.rectangle("fill", 0, self.ground, self.width, self.height)
-
-  love.graphics.setColor(0, 0, 0, 255)
-  love.graphics.setFont(self.global.fonts['tiny'])
-  love.graphics.print(
-    'Score: ' .. self.player.score .. '  ' ..
-    'Best: ' .. self.global.save.score .. '  ' ..
-    'Shots: ' .. self.player.total_shots .. '  ',
-    10,
-    self.height - 35)
-
-  love.graphics.setColor(255, 255, 255, 255)
-
   if self.loose then
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.print('You loose!', 10, 20)
+    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.print('You loose!', 100, 200)
     love.graphics.setColor(self.color)
   end
 
@@ -142,12 +131,27 @@ function World:draw()
   -- Player
   self.player:draw()
 
+  -- Ground
+  love.graphics.setColor(self.ground_color)
+  love.graphics.rectangle("fill", 0, self.ground, self.width, self.height)
+
+  -- Bottom informations
+  love.graphics.setColor(0, 0, 0, 255)
+  love.graphics.setFont(self.global.fonts['tiny'])
+  love.graphics.print(
+    'Score: ' .. self.player.score .. '  ' ..
+    'Best: ' .. self.global.save.score .. '  ' ..
+    'Shots: ' .. self.player.total_shots .. '  ',
+    10,
+    self.height - 35)
+
   -- Countdown
   if self.start and not self.ready then
     local remaining = self.start_seconds - math.floor(self.start_count)
     if remaining == 0 then
       return
     end
+    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(self.global.fonts['normal'])
     love.graphics.print(remaining, 270, 320)
   end
@@ -275,9 +279,14 @@ function World:update(dt)
     self.global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
   end
 end
-function World:keyreleased(key)
+function World:keypressed(key, isrepeat)
   if not self.loose and not self.win and self.ready then
-    self.player:keyreleased(key)
+    self.player:keypressed(key)
+  end
+  if self.global.gamestate == "overlay" and key == "escape" then
+    self.global.gamestate = "play"
+  elseif self.global.gamestate == "play" and key == "escape" then
+    self.global.gamestate = "overlay"
   end
 end
 function World:mousepressed(x, y)

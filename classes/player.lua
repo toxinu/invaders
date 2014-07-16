@@ -27,7 +27,7 @@ function Player:shot()
   table.insert(self.shots, shot)
   love.audio.play(self.global.sounds['shoot'])
 end
-function Player:keyreleased(key)
+function Player:keypressed(key)
   if key == " " then
     self:shot()
   end
