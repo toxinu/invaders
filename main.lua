@@ -69,8 +69,13 @@ end
 
 function love.update(dt)
   if global.gamestate == "menu" then
+    love.mouse.setVisible(true)
     global.menu:update(dt)
-  else
+  elseif global.gamestate == "play" then
+    love.mouse.setVisible(false)
+    global.world:update(dt)
+  elseif global.gamestate == "overlay" then
+    love.mouse.setVisible(true)
     global.world:update(dt)
   end
 end
