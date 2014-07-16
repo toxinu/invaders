@@ -51,6 +51,7 @@ function Mob:initialize(global)
   Entity.initialize(self, global)
   self.speed = 20
   self.shots = {}
+  self.dead = false
   self.show_counter = 0
   self:addImage("assets/images/mob.png")
 end
@@ -72,6 +73,17 @@ function Mob:randomMove(dt)
   self.y = self.y + self.speed * dt
 end
 function Mob:update(dt, direction)
+  for k, v in pairs(self.shots) do
+    v.y = v.y + v.speed * dt
+    if v.y + v.height > self.global.world.ground then
+      table.remove(self.shots, k)
+    end
+  end
+
+  if self.dead then
+    return
+  end
+
   if direction == "right" then
     self.x = self.x + self.speed * dt
   elseif direction == "left" then
@@ -89,13 +101,6 @@ function Mob:update(dt, direction)
     self.show_counter = 0
   end
 
-  for k, v in pairs(self.shots) do
-    v.y = v.y + v.speed * dt
-    if v.y + v.height > self.global.world.ground then
-      table.remove(self.shots, k)
-    end
-  end
-
   if self.y + self.height >= 550 then
     self.global.world.loose = true
   end
@@ -110,7 +115,9 @@ function Mob:shot()
   table.insert(self.shots, shot)
 end
 function Mob:draw()
-  Entity.draw(self)
+  if not self.dead then
+    Entity.draw(self)
+  end
   for k, v in pairs(self.shots) do
     v:draw()
   end
