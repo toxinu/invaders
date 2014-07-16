@@ -5,6 +5,7 @@ GAME_NAME="Invaders"
 LOVE_VERSION="0.9.1"
 BUILD_DIR=$(pwd)"/build"
 TMP_DIR=$BUILD_DIR"/tmp"
+ICON="assets/images/icon.png"
 
 PLIST=$(cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -47,7 +48,7 @@ PLIST=$(cat <<EOF
     <key>CFBundleExecutable</key>
     <string>love</string>
     <key>CFBundleIconFile</key>
-    <string>Love.icns</string>
+    <string>icon.icns</string>
     <key>CFBundleIdentifier</key>
     <string>$GAME_NAME</string>
     <key>CFBundleInfoDictionaryVersion</key>
@@ -121,6 +122,10 @@ if [[ $1 == "osx" ]]; then
 
     # Copy .love
     cp $BUILD_DIR/$GAME_NAME.love $BUILD_DIR/$GAME_NAME.app/Contents/Resources/
+
+    # Create icon
+    sips -s format tiff "$ICON" --out "$BUILD_DIR/$GAME_NAME.app/Contents/Resources/icon.tiff" --resampleHeightWidth 128 128 >& /dev/null
+    tiff2icns -noLarge "$BUILD_DIR/$GAME_NAME.app/Contents/Resources/icon.tiff" >& /dev/null
 
     # Set plist
     echo $PLIST > $BUILD_DIR/$GAME_NAME.app/Contents/Info.plist
