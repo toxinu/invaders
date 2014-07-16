@@ -109,7 +109,7 @@ function Mob:shot()
   local shot = Shot:new()
   shot.color = {255, 0, 0, 255}
   shot.height = 8
-  shot.width = 2
+  shot.width = 3
   shot.x = self.x + self.width / 2
   shot.y = self.y
   table.insert(self.shots, shot)

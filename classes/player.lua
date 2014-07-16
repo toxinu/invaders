@@ -21,7 +21,7 @@ function Player:shot()
   self.total_shots = self.total_shots + 1
   shot.color = {255, 255, 255, 255}
   shot.height = 8
-  shot.width = 2
+  shot.width = 3
   shot.x = self.x + self.width / 2
   shot.y = self.y
   table.insert(self.shots, shot)
