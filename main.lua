@@ -2,6 +2,7 @@ local entity = require 'classes/entity'
 local world = require 'classes/world'
 local gui = require 'classes/gui'
 local Tserial = require 'libs/Tserial'
+local utils = require 'libs/utils'
 
 local Mob = entity.Mob
 local Player = entity.Player
@@ -19,6 +20,14 @@ function love.load()
     tiny = love.graphics.newFont('assets/fonts/superscript.ttf', 20),
     small = love.graphics.newFont('assets/fonts/superscript.ttf', 30),
     normal = love.graphics.newFont('assets/fonts/superscript.ttf', 50)}
+
+  global.sounds = {
+    shoot = love.audio.newSource('assets/sfx/shoot.wav', 'static'),
+    explosion = love.audio.newSource('assets/sfx/explosion.wav', 'static'),
+    music = love.audio.newSource('assets/sfx/music.mp3', 'stream')
+  }
+
+  love.audio.play(global.sounds['music'])
 
   love.window.setTitle('Invaders by socketubs')
   love.graphics.setFont(global.fonts['normal'])
@@ -47,6 +56,13 @@ function love.load()
     Button:new("Play", "play", global.fonts['small'], 100, 400, play_callback))
   global.menu:addButton(
     Button:new("Exit", "exit", global.fonts['small'], 100, 430, exit_callback))
+  global.menu:addButton(
+    Button:new(
+      "Developed by socketubs",
+      "about",
+      global.fonts['tiny'],
+      10, 570,
+      function () utils.open_url('https://github.com/socketubs/invaders') end))
 end
 
 function love.update(dt)

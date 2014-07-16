@@ -25,6 +25,7 @@ function Player:shot()
   shot.x = self.x + self.width / 2
   shot.y = self.y
   table.insert(self.shots, shot)
+  love.audio.play(self.global.sounds['shoot'])
 end
 function Player:keyreleased(key)
   if key == " " then
