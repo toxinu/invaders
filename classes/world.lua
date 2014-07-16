@@ -203,8 +203,9 @@ function World:update(dt)
     for k, shot in pairs(self.player.shots) do
         --- Interate on all entities
         for kk, v in pairs(self.mobs) do
-          if v:collide(shot) then
-            table.remove(self.mobs, kk)
+          if not v.dead and v:collide(shot) then
+            -- table.remove(self.mobs, kk)
+            v.dead = true
             table.remove(self.player.shots, k)
             self.player.score = self.player.score + v.score
             love.audio.play(self.global.sounds['explosion'])
@@ -220,7 +221,13 @@ function World:update(dt)
   -- Increment elapsed time
   self.elapsed_time = self.elapsed_time + dt
 
-  if (table.getn(self.mobs) == 0) then
+  local count = 0
+  for k, v in ipairs(self.mobs) do
+    if not v.dead then
+      count = count + 1
+    end
+  end
+  if (count == 0) then
     self.win = true
     self.total_score = self.player.score - self.player.total_shots * 2 - math.floor(self.elapsed_time)
     if self.total_score < 0 then
@@ -235,7 +242,9 @@ function World:update(dt)
   end
 end
 function World:keyreleased(key)
-  self.player:keyreleased(key)
+  if not self.loose and not self.win then
+    self.player:keyreleased(key)
+  end
 end
 function World:mousepressed(x, y)
   self.overlay:mousepressed(x, y)
