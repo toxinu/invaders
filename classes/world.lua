@@ -28,11 +28,15 @@ function World:initialize(global)
   self.border = 20
   self.elapsed_time = 0
 
+  self.ready = false
+  self.start = false
+  self.start_count = 0
+  self.start_seconds = 3
+
   -- Level settings
   self.score = 0
-  self.speed_step = 1
-  self.mob_number = 35
-  -- self.mob_number = 0
+  self.speed_step = 2.5
+  self.mob_number = 49
   self.mob_speed = 60
   self.mob_score = 50
 
@@ -73,7 +77,7 @@ function World:populate()
   self.player.total_shots = 0
   -- Mobs
   local x_offset = 50
-  local y_offset = 70
+  local y_offset = 100
   local column = 1
   for i = 1, self.mob_number do
     local mob = Mob:new(self.global)
@@ -124,8 +128,8 @@ function World:draw()
     love.graphics.print('You win!', 100, 200)
     love.graphics.setFont(self.global.fonts['tiny'])
     local msg = 'Total score: ' .. self.player.score ..
-      '-' .. self.player.total_shots .. 'x2' ..
-      '-' .. math.floor(self.elapsed_time) ..
+      '-' .. self.player.total_shots .. 'x5' ..
+      '-' .. math.floor(self.elapsed_time) .. 'x5' ..
       '=' .. self.total_score .. '!'
     love.graphics.print(msg, 100, 250)
     love.graphics.setColor(self.color)
@@ -137,6 +141,16 @@ function World:draw()
   end
   -- Player
   self.player:draw()
+
+  -- Countdown
+  if self.start and not self.ready then
+    local remaining = self.start_seconds - math.floor(self.start_count)
+    if remaining == 0 then
+      return
+    end
+    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.print(remaining, 270, 320)
+  end
 
   if self.global.gamestate == "overlay" then
     self.overlay:draw()
@@ -162,7 +176,27 @@ function World:update(dt)
     return
   end
 
+  -- Stop game updaet if win and loose
   if self.loose or self.win then
+    return
+  end
+
+  -- Not start
+  if not self.start then
+    return
+  end
+
+  -- Start but no cooldown
+  if self.start and self.start_count < self.start_seconds then
+    self.start_count = self.start_count + dt
+    return
+  end
+
+  if self.start and self.start_count >= self.start_seconds then
+    self.ready = true
+  end
+
+  if not self.ready then
     return
   end
 
@@ -229,7 +263,7 @@ function World:update(dt)
   end
   if (count == 0) then
     self.win = true
-    self.total_score = self.player.score - self.player.total_shots * 2 - math.floor(self.elapsed_time)
+    self.total_score = self.player.score - self.player.total_shots * 5 - math.floor(self.elapsed_time) * 5
     if self.total_score < 0 then
       self.total_score = 0
     end
@@ -242,7 +276,7 @@ function World:update(dt)
   end
 end
 function World:keyreleased(key)
-  if not self.loose and not self.win then
+  if not self.loose and not self.win and self.ready then
     self.player:keyreleased(key)
   end
 end

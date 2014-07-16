@@ -94,7 +94,7 @@ function Mob:update(dt, direction)
 
   self.show_counter = self.show_counter + dt
 
-  if self.show_counter >= 3 then
+  if self.show_counter >= 2 then
     if math.random(1, 4) == 1 then
       self:shot()
     end

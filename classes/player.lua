@@ -9,7 +9,7 @@ local Shot = entity.Shot
 local Player = class('Player', Entity)
 function Player:initialize(global)
   Entity.initialize(self, global)
-  self.x = 200
+  self.x = 270
   self.y = 520
   self.speed = 150
   self.shots = {}

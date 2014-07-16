@@ -47,6 +47,7 @@ function love.load()
     -- World
     global.world = World:new(global)
     global.world:populate()
+    global.world.start = true
     global.gamestate = "play"
   end
   local exit_callback = function ()
