@@ -84,6 +84,7 @@ function Mob:update(dt, direction)
   end
 
   for k, v in pairs(self.shots) do
+    v:update(dt)
     v.y = v.y + v.speed * dt
     if v.y + v.height > self.global.world.ground then
       table.remove(self.shots, k)
@@ -117,9 +118,7 @@ function Mob:update(dt, direction)
 end
 function Mob:shot()
   local shot = Shot:new()
-  shot.color = {255, 0, 0, 255}
-  shot.height = 8
-  shot.width = 3
+  shot:addImage('assets/images/shot.png', 6, 12, 0.1, 2)
   shot.x = self.x + self.width / 2
   shot.y = self.y
   table.insert(self.shots, shot)
