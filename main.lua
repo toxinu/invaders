@@ -105,7 +105,6 @@ end
 function love.draw()
   if global.gamestate == "menu" then
     global.menu:draw()
-
   else
     global.world:draw()
   end
