@@ -1,21 +1,28 @@
 local entity = require 'classes/entity'
 local world = require 'classes/world'
 local gui = require 'classes/gui'
-local Tserial = require 'libs/Tserial'
+local save = require 'classes/save'
 local utils = require 'libs/utils'
 
+local Save = save.Save
 local Mob = entity.Mob
 local Player = entity.Player
 local World = world.World
 local Menu = gui.Menu
 local Button = gui.Button
 
+local version = "0.1.0"
 
 function love.load()
   love.window.setMode(600, 600, {vsync=true, resizable=false})
-  love.filesystem.setIdentity("Invaders")
 
   global = {}
+
+  global.save = Save:new()
+  global.save:load()
+
+  global.version = version
+
   global.fonts = {
     tiny = love.graphics.newFont('assets/fonts/superscript.ttf', 20),
     small = love.graphics.newFont('assets/fonts/superscript.ttf', 30),
@@ -27,22 +34,21 @@ function love.load()
     music = love.audio.newSource('assets/sfx/music.mp3', 'stream')
   }
 
+  if not global.save.content.sound then
+    love.audio.setVolume(0)
+  end
   global.sounds['music']:setLooping(true)
   love.audio.play(global.sounds['music'])
 
   love.window.setTitle('Invaders by socketubs')
   love.graphics.setFont(global.fonts['normal'])
 
-  -- Save
-  if not love.filesystem.exists("invaders.sav") then
-    love.filesystem.write("invaders.sav", Tserial.pack({score=0}))
-  end
-  global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
-
   -- Gamestate
   global.gamestate = "menu"
 
-  -- Menu
+  ----------
+  -- Menu --
+  ----------
   global.menu = Menu:new(global)
   local play_callback = function ()
     -- World
@@ -65,6 +71,22 @@ function love.load()
       global.fonts['tiny'],
       10, 570,
       function () utils.open_url('https://github.com/socketubs/invaders') end))
+  local sound_button = Button:new("Sound: ", "sound", global.fonts['tiny'], 450, 570)
+  sound_button.active = global.save.content.sound
+  sound_button.text = "Sound: " .. (sound_button.active and "on" or "off")
+  sound_button.callback = function (self)
+    self.active = not self.active
+    global.save.content.sound = self.active
+    global.save:save()
+    self.text = "Sound: " .. (self.active and "on" or "off")
+    if not self.active then
+      love.audio.setVolume(0)
+    else
+      love.audio.setVolume(1)
+    end
+  end
+  global.menu:addButton(sound_button)
+  -- End Menu --
 end
 
 function love.update(dt)

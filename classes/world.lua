@@ -119,7 +119,7 @@ function World:draw()
   love.graphics.setFont(self.global.fonts['tiny'])
   love.graphics.print(
     'Score: ' .. self.player.score .. '  ' ..
-    'Best: ' .. self.global.save.score .. '  ' ..
+    'Best: ' .. self.global.save.content.score .. '  ' ..
     'Shots: ' .. self.player.total_shots .. '  ',
     10,
     self.height - 35)
@@ -198,12 +198,10 @@ function World:update(dt)
     if self.total_score < 0 then
       self.total_score = 0
     end
-    local save = {}
-    save.score = self.total_score
-    save.time = self.elapsed_time
-    save.shots = self.player.total_shots
-    love.filesystem.write("invaders.sav", Tserial.pack(save))
-    self.global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
+    global.save.content.score = self.total_score
+    global.save.content.time = self.elapsed_time
+    global.save.content.shots = self.player.total_score
+    global.save:save()
   end
 
   -- Stop game updaet if win and loose
