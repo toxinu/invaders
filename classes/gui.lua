@@ -23,7 +23,7 @@ function Button:getHeight()
   return self.font:getHeight(self.text)
 end
 function Button:pressed()
-  return self.callback()
+  return self.callback(self)
 end
 function Button:hover()
   self.color = {58, 102, 80, 255}
