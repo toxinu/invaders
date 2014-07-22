@@ -118,7 +118,7 @@ function Mob:update(dt, direction)
 end
 function Mob:shot()
   local shot = Shot:new()
-  shot:addImage('assets/images/shot.png', 6, 12, 0.1, 2)
+  shot:addImage('assets/images/shot.png', 6, 12, 0.3, 0)
   shot.x = self.x + self.width / 2
   shot.y = self.y
   table.insert(self.shots, shot)
