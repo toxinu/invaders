@@ -103,27 +103,6 @@ function World:draw()
   love.graphics.setColor(self.color)
   love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 
-  if self.loose then
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
-    love.graphics.print('You loose!', 100, 200)
-    love.graphics.setFont(self.global.fonts['tiny'])
-    love.graphics.print('Press escape to continue.', 100, 280)
-  end
-
-  if self.win then
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
-    love.graphics.print('You win!', 100, 200)
-    love.graphics.setFont(self.global.fonts['tiny'])
-    local msg = 'Total score: ' .. self.player.score ..
-      '-' .. self.player.total_shots .. 'x5' ..
-      '-' .. math.floor(self.elapsed_time) .. 'x5' ..
-      '=' .. self.total_score .. '!'
-    love.graphics.print(msg, 100, 250)
-    love.graphics.print('Press escape to continue.', 100, 290)
-  end
-
   -- Mobs
   for k, v in pairs(self.mobs) do
     v:draw()
@@ -154,6 +133,31 @@ function World:draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(self.global.fonts['normal'])
     love.graphics.print(remaining, 270, 320)
+  end
+
+  if self.loose then
+    love.graphics.setColor(self.overlay.background_color)
+    love.graphics.rectangle("fill", 0, 0, 600, 600)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.print('You loose!', 100, 200)
+    love.graphics.setFont(self.global.fonts['tiny'])
+    love.graphics.print('Press escape to continue.', 100, 280)
+  end
+
+  if self.win then
+    love.graphics.setColor(self.overlay.background_color)
+    love.graphics.rectangle("fill", 0, 0, 600, 600)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.print('You win!', 100, 200)
+    love.graphics.setFont(self.global.fonts['tiny'])
+    local msg = 'Total score: ' .. self.player.score ..
+      '-' .. self.player.total_shots .. 'x5' ..
+      '-' .. math.floor(self.elapsed_time) .. 'x5' ..
+      '=' .. self.total_score .. '!'
+    love.graphics.print(msg, 100, 250)
+    love.graphics.print('Press escape to continue.', 100, 290)
   end
 
   if self.global.gamestate == "overlay" then
