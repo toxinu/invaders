@@ -175,9 +175,31 @@ function World:getBorderMobs()
   return left_mob, right_mob
 end
 function World:update(dt)
+  -- Only update overlay if gamestate is overlay
   if self.global.gamestate == "overlay" then
     self.overlay:update(dt)
     return
+  end
+
+  -- Check if win
+  local count = 0
+  for k, v in ipairs(self.mobs) do
+    if not v.dead then
+      count = count + 1
+    end
+  end
+  if (count == 0) then
+    self.win = true
+    self.total_score = self.player.score - self.player.total_shots * 5 - math.floor(self.elapsed_time) * 5
+    if self.total_score < 0 then
+      self.total_score = 0
+    end
+    local save = {}
+    save.score = self.total_score
+    save.time = self.elapsed_time
+    save.shots = self.player.total_shots
+    love.filesystem.write("invaders.sav", Tserial.pack(save))
+    self.global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
   end
 
   -- Stop game updaet if win and loose
@@ -243,7 +265,7 @@ function World:update(dt)
         for kk, v in pairs(self.mobs) do
           if not v.dead and v:collide(shot) then
             -- table.remove(self.mobs, kk)
-            v.dead = true
+            v:setDead(true)
             table.remove(self.player.shots, k)
             self.player.score = self.player.score + v.score
             love.audio.play(self.global.sounds['explosion'])
@@ -258,26 +280,6 @@ function World:update(dt)
 
   -- Increment elapsed time
   self.elapsed_time = self.elapsed_time + dt
-
-  local count = 0
-  for k, v in ipairs(self.mobs) do
-    if not v.dead then
-      count = count + 1
-    end
-  end
-  if (count == 0) then
-    self.win = true
-    self.total_score = self.player.score - self.player.total_shots * 5 - math.floor(self.elapsed_time) * 5
-    if self.total_score < 0 then
-      self.total_score = 0
-    end
-    local save = {}
-    save.score = self.total_score
-    save.time = self.elapsed_time
-    save.shots = self.player.total_shots
-    love.filesystem.write("invaders.sav", Tserial.pack(save))
-    self.global.save = Tserial.unpack(love.filesystem.read("invaders.sav"))
-  end
 end
 function World:keypressed(key, isrepeat)
   if not self.loose and not self.win and self.ready then

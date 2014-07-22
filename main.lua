@@ -28,7 +28,7 @@ function love.load()
   }
 
   global.sounds['music']:setLooping(true)
-  love.audio.play(global.sounds['music'])
+  --love.audio.play(global.sounds['music'])
 
   love.window.setTitle('Invaders by socketubs')
   love.graphics.setFont(global.fonts['normal'])

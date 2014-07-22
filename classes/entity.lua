@@ -29,9 +29,10 @@ function Entity:draw()
     love.graphics.setColor(255, 255, 255, 255)
   end
 end
-function Entity:addImage(image_path, width, height, delay)
+function Entity:addImage(image_path, width, height, delay, nbFrames)
+  local nbFrames = nbFrames or 0
   self.image = love.graphics.newImage(image_path)
-  self.animation = newAnimation(self.image, width, height, delay, 0)
+  self.animation = newAnimation(self.image, width, height, delay, nbFrames)
   self.width = width
   self.height = height
   self.quad = love.graphics.newQuad(0, 0, width, height, width, height)
@@ -58,12 +59,29 @@ function Mob:initialize(global)
 
   self.speed = 20
   self.shots = {}
+
   self.dead = false
+  self.dead_counter = 0
+  self.dead_timer = 0.1
+
   self.show_counter = 0
-  self:addImage("assets/images/mob.png", 24, 18, 0.5)
+  self:addImage("assets/images/mob.png", 24, 18, 0.5, 2)
+end
+function Mob:setDead(value)
+  self.dead = value
+  if self.animation and self.animation:getCurrentFrame() ~= 3 then
+    self.animation:addFrame(48, 0, 24, 18, 0.5)
+    self.animation:seek(3)
+  end
 end
 function Mob:update(dt, direction)
-  Entity.update(self, dt)
+  -- Update dead counter if dead
+  if self.dead then
+    self.dead_counter = self.dead_counter + dt
+  -- Or just update entity
+  else
+    Entity.update(self, dt)
+  end
 
   for k, v in pairs(self.shots) do
     v.y = v.y + v.speed * dt
@@ -107,7 +125,8 @@ function Mob:shot()
   table.insert(self.shots, shot)
 end
 function Mob:draw()
-  if not self.dead then
+  -- If not dead of dead_counter drawing not reach
+  if not self.dead or (self.dead and self.dead_counter < self.dead_timer) then
     Entity.draw(self)
   end
   for k, v in pairs(self.shots) do
