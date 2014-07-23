@@ -7,9 +7,9 @@ local Shot = entity.Shot
 
 -- Player
 local Player = class('Player', Entity)
-function Player:initialize(global)
-  Entity.initialize(self, global)
-  self.x = 270
+function Player:initialize()
+  Entity.initialize(self)
+  self.x = 285
   self.y = 520
   self.speed = 150
   self.shots = {}
@@ -25,7 +25,7 @@ function Player:shot()
   shot.x = self.x + self.width / 2
   shot.y = self.y
   table.insert(self.shots, shot)
-  love.audio.play(self.global.sounds['shoot'])
+  love.audio.play(global.sounds['shoot'])
 end
 function Player:keypressed(key)
   if key == " " then
@@ -42,7 +42,7 @@ function Player:update(dt)
     end
   elseif love.keyboard.isDown("right") then
     local x = self.x + self.speed * dt
-    if x + self.width < self.global.world.width then
+    if x + self.width < global.world.width then
       self.x = x
     end
   end

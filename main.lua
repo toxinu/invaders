@@ -13,10 +13,10 @@ local Button = gui.Button
 
 local version = "0.1.0"
 
+global = {}
+
 function love.load()
   love.window.setMode(600, 600, {vsync=true, resizable=false})
-
-  global = {}
 
   global.save = Save:new()
   global.save:load()

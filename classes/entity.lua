@@ -7,8 +7,7 @@ local Button = gui.Button
 
 -- Entity
 local Entity = class('Entity')
-function Entity:initialize(global)
-  self.global = global
+function Entity:initialize()
   self.height = 30
   self.width = 15
   self.x = 300
@@ -86,7 +85,7 @@ function Mob:update(dt, direction)
   for k, v in pairs(self.shots) do
     v:update(dt)
     v.y = v.y + v.speed * dt
-    if v.y + v.height > self.global.world.ground then
+    if v.y + v.height > global.world.ground then
       table.remove(self.shots, k)
     end
   end
@@ -113,7 +112,7 @@ function Mob:update(dt, direction)
   end
 
   if self.y + self.height >= 550 then
-    self.global.world.loose = true
+    global.world.loose = true
   end
 end
 function Mob:shot()

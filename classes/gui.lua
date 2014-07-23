@@ -34,9 +34,8 @@ end
 
 -- Menu
 local Menu = class('Menu')
-function Menu:initialize(global)
+function Menu:initialize()
   self.buttons = {}
-  self.global = global
   self.background_color = {29, 30, 26, 255}
 end
 function Menu:addButton(button)
@@ -52,13 +51,13 @@ function Menu:draw()
     v:draw()
   end
 
-  if self.global.gamestate == "menu" then
+  if global.gamestate == "menu" then
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.setFont(global.fonts['normal'])
     love.graphics.print("Invaders!", 100, 300)
-  elseif self.global.gamestate == "overlay" then
+  elseif global.gamestate == "overlay" then
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.setFont(global.fonts['normal'])
     love.graphics.print("-- Pause --", 150, 200)
   end
 end

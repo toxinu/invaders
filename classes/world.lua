@@ -2,10 +2,12 @@ local class = require 'libs/middleclass'
 local Tserial = require 'libs/Tserial'
 local utils = require 'libs/utils'
 
+local build = require 'classes/build'
 local gui = require 'classes/gui'
 local entity = require 'classes/entity'
 local player = require 'classes/player'
 
+local Build = build.Build
 local Mob = entity.Mob
 local Player = player.Player
 local Menu = gui.Menu
@@ -13,10 +15,10 @@ local Button = gui.Button
 
 -- World
 local World = class('World')
-function World:initialize(global)
-  self.global = global
-  self.overlay = Menu:new(global)
+function World:initialize()
+  self.overlay = Menu:new()
   self.mobs = {}
+  self.builds = {}
   self.player = nil
   self.color = {29, 30, 26, 255}
   self.ground_color = {255, 255, 255, 255}
@@ -72,7 +74,7 @@ function World:initialize(global)
 end
 function World:populate()
   -- Player
-  self.player = Player:new(self.global)
+  self.player = Player:new(global)
   self.player.score = 0
   self.player.total_shots = 0
   -- Mobs
@@ -80,7 +82,7 @@ function World:populate()
   local y_offset = 100
   local column = 1
   for i = 1, self.mob_number do
-    local mob = Mob:new(self.global)
+    local mob = Mob:new(global)
     mob.speed = self.mob_speed
     mob.score = self.mob_score
     mob.x = column * (mob.width + x_offset)
@@ -94,6 +96,10 @@ function World:populate()
     self:addEntity(mob)
     column = column + 1
   end
+  -- Builds
+  table.insert(self.builds, Build:new(70, 400))
+  table.insert(self.builds, Build:new(255, 400))
+  table.insert(self.builds, Build:new(440, 400))
 end
 function World:addEntity(entity)
   table.insert(self.mobs, entity)
@@ -109,6 +115,10 @@ function World:draw()
   end
   -- Player
   self.player:draw()
+  -- Builds
+  for k, v in pairs(self.builds) do
+    v:draw()
+  end
 
   -- Ground
   love.graphics.setColor(self.ground_color)
@@ -116,10 +126,10 @@ function World:draw()
 
   -- Bottom informations
   love.graphics.setColor(0, 0, 0, 255)
-  love.graphics.setFont(self.global.fonts['tiny'])
+  love.graphics.setFont(global.fonts['tiny'])
   love.graphics.print(
     'Score: ' .. self.player.score .. '  ' ..
-    'Best: ' .. self.global.save.content.score .. '  ' ..
+    'Best: ' .. global.save.content.score .. '  ' ..
     'Shots: ' .. self.player.total_shots .. '  ',
     10,
     self.height - 35)
@@ -131,17 +141,17 @@ function World:draw()
       return
     end
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
-    love.graphics.print(remaining, 270, 320)
+    love.graphics.setFont(global.fonts['normal'])
+    love.graphics.print(remaining, 285, 320)
   end
 
   if self.loose then
     love.graphics.setColor(self.overlay.background_color)
     love.graphics.rectangle("fill", 0, 0, 600, 600)
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.setFont(global.fonts['normal'])
     love.graphics.print('You loose!', 100, 200)
-    love.graphics.setFont(self.global.fonts['tiny'])
+    love.graphics.setFont(global.fonts['tiny'])
     love.graphics.print('Press escape to continue.', 100, 280)
   end
 
@@ -149,9 +159,9 @@ function World:draw()
     love.graphics.setColor(self.overlay.background_color)
     love.graphics.rectangle("fill", 0, 0, 600, 600)
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setFont(self.global.fonts['normal'])
+    love.graphics.setFont(global.fonts['normal'])
     love.graphics.print('You win!', 100, 200)
-    love.graphics.setFont(self.global.fonts['tiny'])
+    love.graphics.setFont(global.fonts['tiny'])
     local msg = 'Total score: ' .. self.player.score ..
       '-' .. self.player.total_shots .. 'x5' ..
       '-' .. math.floor(self.elapsed_time) .. 'x5' ..
@@ -160,7 +170,7 @@ function World:draw()
     love.graphics.print('Press escape to continue.', 100, 290)
   end
 
-  if self.global.gamestate == "overlay" then
+  if global.gamestate == "overlay" then
     self.overlay:draw()
   end
 end
@@ -180,7 +190,7 @@ function World:getBorderMobs()
 end
 function World:update(dt)
   -- Only update overlay if gamestate is overlay
-  if self.global.gamestate == "overlay" then
+  if global.gamestate == "overlay" then
     self.overlay:update(dt)
     return
   end
@@ -250,10 +260,17 @@ function World:update(dt)
     v:update(dt, self.directions[self.direction])
     -- Check if entity have shots
     if v.shots then
-      -- Interate on all entity shots
+      -- Iterate on all entity shots
       for kk, shot in pairs(v.shots) do
+        -- Check player collide
         if self.player:collide(shot) then
           self.loose = true
+        end
+        -- Iterate on all builds to check collide
+        for kkk, b in pairs(self.builds) do
+          if b:collide(shot) then
+            table.remove(v.shots, kk)
+          end
         end
       end
     end
@@ -263,19 +280,24 @@ function World:update(dt)
   self.player:update(dt)
   if self.player.shots then
     for k, shot in pairs(self.player.shots) do
-        --- Interate on all entities
+        -- Iterate on all mobs
         for kk, v in pairs(self.mobs) do
           if not v.dead and v:collide(shot) then
-            -- table.remove(self.mobs, kk)
             v:setDead(true)
             table.remove(self.player.shots, k)
             self.player.score = self.player.score + v.score
-            love.audio.play(self.global.sounds['explosion'])
+            love.audio.play(global.sounds['explosion'])
             -- Change mobs speed
             for kk, vv in pairs(self.mobs) do
               vv.speed = vv.speed + self.speed_step
             end
            end
+        end
+        -- Iterate on all builds
+        for kk, v in pairs(self.builds) do
+          if v:collide(shot) then
+            table.remove(self.player.shots, k)
+          end
         end
       end
   end
@@ -287,13 +309,13 @@ function World:keypressed(key, isrepeat)
   if not self.loose and not self.win and self.ready then
     self.player:keypressed(key)
   end
-  if self.global.gamestate == "overlay" and key == "escape" then
-    self.global.gamestate = "play"
-  elseif self.global.gamestate == "play" and key == "escape" then
+  if global.gamestate == "overlay" and key == "escape" then
+    global.gamestate = "play"
+  elseif global.gamestate == "play" and key == "escape" then
     if self.loose or self.win then
-      self.global.gamestate = "menu"
+      global.gamestate = "menu"
     else
-      self.global.gamestate = "overlay"
+      global.gamestate = "overlay"
     end
   end
 end
