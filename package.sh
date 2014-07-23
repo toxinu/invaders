@@ -2,6 +2,8 @@
 set -e
 
 GAME_NAME="Invaders"
+GAME_VERSION="0.0.1"
+COPYRIGHT="© 2014 Socketubs"
 LOVE_VERSION="0.9.1"
 BUILD_DIR=$(pwd)"/build"
 TMP_DIR=$BUILD_DIR"/tmp"
@@ -58,9 +60,9 @@ PLIST=$(cat <<EOF
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.9.1</string>
+    <string>$GAME_VERSION</string>
     <key>CFBundleSignature</key>
-    <string>LoVe</string>
+    <string>LoVeDD</string>
     <key>DTCompiler</key>
     <string>com.apple.compilers.llvm.clang.1_0</string>
     <key>DTPlatformBuild</key>
@@ -78,7 +80,7 @@ PLIST=$(cat <<EOF
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.games</string>
     <key>NSHumanReadableCopyright</key>
-    <string>© 2006-2014 LÖVE Development Team</string>
+    <string>$COPYRIGHT</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>
