@@ -37,7 +37,8 @@ function World:initialize()
 
   -- Level settings
   self.score = 0
-  self.speed_step = 2.5
+  self.speed_step = 2
+  self.player_life = 3
   self.mob_number = 49
   self.mob_speed = 60
   self.mob_score = 50
@@ -75,8 +76,7 @@ end
 function World:populate()
   -- Player
   self.player = Player:new(global)
-  self.player.score = 0
-  self.player.total_shots = 0
+  self.player.life_remaining = self.player_life
   -- Mobs
   local x_offset = 50
   local y_offset = 100
@@ -92,7 +92,6 @@ function World:populate()
       mob.x = column * (mob.width + x_offset)
     end
     mob.y = mob.height + y_offset
-    mob.color = {0, 255, 255, 255}
     self:addEntity(mob)
     column = column + 1
   end
@@ -130,7 +129,8 @@ function World:draw()
   love.graphics.print(
     'Score: ' .. self.player.score .. '  ' ..
     'Best: ' .. global.save.content.score .. '  ' ..
-    'Shots: ' .. self.player.total_shots .. '  ',
+    'Shots: ' .. self.player.total_shots .. '  ' ..
+    'Lifes: ' .. self.player.life_remaining,
     10,
     self.height - 35)
 
@@ -263,8 +263,12 @@ function World:update(dt)
       -- Iterate on all entity shots
       for kk, shot in pairs(v.shots) do
         -- Check player collide
-        if self.player:collide(shot) then
-          self.loose = true
+        if self.player:collide(shot) and self.player:isTouchable() then
+          self.player:touched()
+          table.remove(v.shots, kk)
+          if self.player:isDead() then
+            self.loose = true
+          end
         end
         -- Iterate on all builds to check collide
         for kkk, b in pairs(self.builds) do

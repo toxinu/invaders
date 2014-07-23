@@ -13,8 +13,37 @@ function Player:initialize()
   self.y = 520
   self.speed = 150
   self.shots = {}
+  self.score = 0
+  self.total_shots = 0
+  self.life_remaining = 0
+
+  self.untouchable = false
+  self.untouchable_counter = 0
+  self.untouchable_time = 3
+  self.untouchable_blink_delay = 0.2
+  self.untouchable_blink_counter = 0
+  self.untouchable_blink_color = global.world.color
+  self.initial_color = self.color
 
   self:addImage("assets/images/player.png", 29, 18, 0.1)
+end
+function Player:touched()
+  self.untouchable = true
+  self.untouchable_counter = 0
+  self.untouchable_blink_counter = 0
+  self.life_remaining = self.life_remaining - 1 or 0
+end
+function Player:isDead()
+  if self.life_remaining <= 0 then
+    return true
+  end
+  return false
+end
+function Player:isTouchable()
+  if self.untouchable and self.untouchable_counter <= self.untouchable_time then
+    return false
+  end
+  return true
 end
 function Player:shot()
   local shot = Shot:new()
@@ -32,8 +61,29 @@ function Player:keypressed(key)
     self:shot()
   end
 end
+function Player:swapTouchableColors()
+  if self.color == self.untouchable_blink_color then
+    self.color = self.initial_color
+  else
+    self.color = self.untouchable_blink_color
+  end
+end
 function Player:update(dt)
   Entity.update(self, dt)
+
+  if self.untouchable and self.untouchable_counter <= self.untouchable_time then
+    if self.untouchable_blink_counter > self.untouchable_blink_delay then
+      self.untouchable_blink_counter = 0
+      self:swapTouchableColors()
+    end
+    self.untouchable_blink_counter = self.untouchable_blink_counter + dt
+    self.untouchable_counter = self.untouchable_counter + dt
+  else
+    self.untouchable = false
+    self.untouchable_counter = 0
+    self.untouchable_blink_counter = 0
+    self.color = self.initial_color
+  end
 
   if love.keyboard.isDown("left") then
     local x = self.x - self.speed * dt
@@ -55,6 +105,7 @@ function Player:update(dt)
   end
 end
 function Player:draw()
+  --
   Entity.draw(self)
   for k, v in pairs(self.shots) do
     v:draw()

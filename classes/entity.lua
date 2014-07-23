@@ -13,19 +13,18 @@ function Entity:initialize()
   self.x = 300
   self.y = 450 - self.height
   self.speed = 100
-  self.color = {255, 255, 0, 255}
+  self.color = {255, 255, 255, 255}
 end
 function Entity:draw()
   if self.animation then
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(self.color)
     self.animation:draw(self.x, self.y)
   elseif self.image and self.quad then
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(self.color)
     love.graphics.draw(self.image, self.quad, self.x, self.y)
   else
     love.graphics.setColor(self.color)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(255, 255, 255, 255)
   end
 end
 function Entity:addImage(image_path, width, height, delay, nbFrames)
@@ -63,7 +62,8 @@ function Mob:initialize(global)
   self.dead_counter = 0
   self.dead_timer = 0.1
 
-  self.show_counter = 0
+  self.shot_counter = 0
+  self.shot_delay = 3
   self:addImage("assets/images/mob.png", 24, 18, 0.5, 2)
 end
 function Mob:setDead(value)
@@ -102,13 +102,13 @@ function Mob:update(dt, direction)
     self.y = self.y + (self.speed * 7) * dt
   end
 
-  self.show_counter = self.show_counter + dt
+  self.shot_counter = self.shot_counter + dt
 
-  if self.show_counter >= 2 then
+  if self.shot_counter >= self.shot_delay then
     if math.random(1, 4) == 1 then
       self:shot()
     end
-    self.show_counter = 0
+    self.shot_counter = 0
   end
 
   if self.y + self.height >= 550 then
