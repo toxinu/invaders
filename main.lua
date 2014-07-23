@@ -17,6 +17,9 @@ global = {}
 
 function love.load()
   love.window.setMode(600, 600, {vsync=true, resizable=false})
+  love.window.setTitle('Invaders by socketubs')
+  love.window.setIcon(
+    love.image.newImageData('assets/images/icon_inverse.png'))
 
   global.save = Save:new()
   global.save:load()
@@ -40,7 +43,6 @@ function love.load()
   global.sounds['music']:setLooping(true)
   love.audio.play(global.sounds['music'])
 
-  love.window.setTitle('Invaders by socketubs')
   love.graphics.setFont(global.fonts['normal'])
 
   -- Gamestate
