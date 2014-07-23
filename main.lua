@@ -97,8 +97,12 @@ function love.update(dt)
     love.mouse.setVisible(true)
     global.menu:update(dt)
   elseif global.gamestate == "play" then
-    love.mouse.setVisible(false)
-    global.world:update(dt)
+    if not love.window.hasFocus() then
+      global.gamestate = "overlay"
+    else
+      love.mouse.setVisible(false)
+      global.world:update(dt)
+    end
   elseif global.gamestate == "overlay" then
     love.mouse.setVisible(true)
     global.world:update(dt)
