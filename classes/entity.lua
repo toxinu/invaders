@@ -1,6 +1,6 @@
-local class = require 'libs/middleclass'
-local gui = require 'classes/gui'
-local AnAL = require('libs/AnAL')
+local class = require 'libs.middleclass'
+local gui = require 'classes.gui'
+local AnAL = require('libs.AnAL')
 
 local Menu = gui.Menu
 local Button = gui.Button

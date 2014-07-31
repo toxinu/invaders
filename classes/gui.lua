@@ -1,4 +1,4 @@
-local class = require 'libs/middleclass'
+local class = require 'libs.middleclass'
 
 -- Button
 local Button = class('Button')

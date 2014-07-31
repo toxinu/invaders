@@ -1,11 +1,11 @@
-local class = require 'libs/middleclass'
-local Tserial = require 'libs/Tserial'
-local utils = require 'libs/utils'
+local class = require 'libs.middleclass'
+local Tserial = require 'libs.Tserial'
+local utils = require 'libs.utils'
 
-local build = require 'classes/build'
-local gui = require 'classes/gui'
-local entity = require 'classes/entity'
-local player = require 'classes/player'
+local build = require 'classes.build'
+local gui = require 'classes.gui'
+local entity = require 'classes.entity'
+local player = require 'classes.player'
 
 local Build = build.Build
 local Mob = entity.Mob
@@ -37,11 +37,15 @@ function World:initialize()
 
   -- Level settings
   self.score = 0
-  self.speed_step = 2
+  self.speed_step = 1.5
   self.player_life = 3
   self.mob_number = 49
   self.mob_speed = 60
   self.mob_score = 50
+
+  -- Builds
+  self.builds_top = 400
+  self.builds_bottom = nil
 
   self.directions = {"left", "down", "right", "down"}
   self.direction = 1
@@ -96,9 +100,10 @@ function World:populate()
     column = column + 1
   end
   -- Builds
-  table.insert(self.builds, Build:new(70, 400))
-  table.insert(self.builds, Build:new(255, 400))
-  table.insert(self.builds, Build:new(440, 400))
+  table.insert(self.builds, Build:new(70, self.builds_top))
+  table.insert(self.builds, Build:new(255, self.builds_top))
+  table.insert(self.builds, Build:new(440, self.builds_top))
+  self.builds_bottom = self.builds_top + self.builds[1].height
 end
 function World:addEntity(entity)
   table.insert(self.mobs, entity)
@@ -108,16 +113,16 @@ function World:draw()
   love.graphics.setColor(self.color)
   love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 
+  -- Builds
+  for k, v in pairs(self.builds) do
+    v:draw()
+  end
   -- Mobs
   for k, v in pairs(self.mobs) do
     v:draw()
   end
   -- Player
   self.player:draw()
-  -- Builds
-  for k, v in pairs(self.builds) do
-    v:draw()
-  end
 
   -- Ground
   love.graphics.setColor(self.ground_color)
@@ -125,6 +130,7 @@ function World:draw()
 
   -- Bottom informations
   love.graphics.setColor(0, 0, 0, 255)
+  love.graphics.print(love.timer.getFPS(), 100, 100)
   love.graphics.setFont(global.fonts['tiny'])
   love.graphics.print(
     'Score: ' .. self.player.score .. '  ' ..
@@ -263,7 +269,7 @@ function World:update(dt)
       -- Iterate on all entity shots
       for kk, shot in pairs(v.shots) do
         -- Check player collide
-        if self.player:collide(shot) and self.player:isTouchable() then
+        if self.player:isTouchable() and self.player:collide(shot) then
           self.player:touched()
           table.remove(v.shots, kk)
           if self.player:isDead() then
@@ -298,9 +304,13 @@ function World:update(dt)
            end
         end
         -- Iterate on all builds
-        for kk, v in pairs(self.builds) do
-          if v:collide(shot) then
-            table.remove(self.player.shots, k)
+        -- Check if shot.y is in the builds zone before checking collide
+        -- For performance
+        if self.builds_top <= shot.y and shot.y <= self.builds_bottom then
+          for kk, v in pairs(self.builds) do
+            if v:collide(shot) then
+              table.remove(self.player.shots, k)
+            end
           end
         end
       end

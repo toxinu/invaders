@@ -1,8 +1,8 @@
-local entity = require 'classes/entity'
-local world = require 'classes/world'
-local gui = require 'classes/gui'
-local save = require 'classes/save'
-local utils = require 'libs/utils'
+local entity = require 'classes.entity'
+local world = require 'classes.world'
+local gui = require 'classes.gui'
+local save = require 'classes.save'
+local utils = require 'libs.utils'
 
 local Save = save.Save
 local Mob = entity.Mob
@@ -17,11 +17,6 @@ global = {}
 math.randomseed(os.time())
 
 function love.load()
-  love.window.setMode(600, 600, {vsync=true, resizable=false})
-  love.window.setTitle('Invaders by socketubs')
-  love.window.setIcon(
-    love.image.newImageData('assets/images/icon_inverse.png'))
-
   global.save = Save:new()
   global.save:load()
 

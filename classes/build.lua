@@ -1,39 +1,74 @@
-local class = require 'libs/middleclass'
-local shapes = require 'libs/hardoncollider.shapes'
+local class = require 'libs.middleclass'
+local shapes = require 'libs.hardoncollider.shapes'
 
 -- Build
 local Build = class('Build')
 function Build:initialize(x, y)
   self.x = x
   self.y = y
-  self.width = 80
-  self.height = 50
   self.color = {255, 255, 255, 255}
-  self.vertices = {
-    20, 30,
-    30, 20,
-    60, 20,
-    70, 30,
-    70, 60,
-    60, 60,
-    60, 50,
-    50, 40,
-    40, 40,
-    30, 50,
-    30, 60,
-    20, 60
+  self.bitmap = {
+    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0,
+    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1
   }
-  self.shape = shapes.newPolygonShape(unpack(self.vertices))
-  self.shape:move(self.x, self.y)
+  self.lineLength = 17
+  self.explosionRadius = 3
+  self.scale = 5
+  self.scaledBitMap = self:getScaledBitMap()
+
+  local x, y = self:getScaledBitMapPoint(table.getn(self.scaledBitMap))
+  self.height = x - self.x
+end
+function Build:getScaledBitMap()
+  local scaledArray = {}
+  for k, v in ipairs(self.bitmap) do
+    local c = 0
+    while (c < self.scale) do
+      table.insert(scaledArray, v)
+      c = c + 1
+    end
+  end
+  return scaledArray
+end
+function Build:getScaledBitMapPoint(i)
+  local x = (i - 1) % (self.lineLength * self.scale)
+  local y = ((i - 1) - x) / (self.lineLength)
+  x = x + self.x
+  y = y + self.y
+  return x, y
 end
 function Build:draw()
   love.graphics.setColor(self.color)
-  love.graphics.translate(self.x, self.y)
-  local triangles = love.math.triangulate(self.vertices)
-  for k, v in pairs(triangles) do
-    love.graphics.polygon('fill', v)
+  for k, v in ipairs(self.scaledBitMap) do
+    local x, y = self:getScaledBitMapPoint(k)
+    if v == 1 then
+      love.graphics.rectangle('fill', x, y, 1 * self.scale, 1 * self.scale )
+    end
   end
-  love.graphics.translate(-self.x, -self.y)
+end
+function Build:explode(x, y)
+  local circleShape = shapes.newCircleShape(
+    x, y, self.explosionRadius * (self.scale / 2))
+  love.graphics.setColor(255, 0, 255, 255)
+  circleShape:draw()
+  for k, v in ipairs(self.scaledBitMap) do
+    if v == 1 then
+      if circleShape:contains(self:getScaledBitMapPoint(k)) then
+        self.scaledBitMap[k] = 0
+      end
+    end
+  end
 end
 function Build:collide(entity)
   local entityShape = shapes.newPolygonShape(
@@ -41,11 +76,17 @@ function Build:collide(entity)
     entity.x + entity.width, entity.y,
     entity.x + entity.width, entity.y + entity.height,
     entity.x, entity.y + entity.height)
-  if self.shape:collidesWith(entityShape) then
-    return true
-  else
-    return false
+
+  for k, v in ipairs(self.scaledBitMap) do
+    if v == 1 then
+      local x, y = self:getScaledBitMapPoint(k)
+      if entityShape:contains(x, y) then
+        self:explode(x, y)
+        return true
+      end
+    end
   end
+  return false
 end
 
 local exports = {}

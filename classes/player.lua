@@ -1,6 +1,6 @@
-local class = require 'libs/middleclass'
+local class = require 'libs.middleclass'
 
-local entity = require 'classes/entity'
+local entity = require 'classes.entity'
 
 local Entity = entity.Entity
 local Shot = entity.Shot

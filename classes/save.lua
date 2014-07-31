@@ -1,10 +1,9 @@
-local class = require 'libs/middleclass'
-local Tserial = require 'libs/Tserial'
+local class = require 'libs.middleclass'
+local Tserial = require 'libs.Tserial'
 
 
 local Save = class('Save')
 function Save:initialize()
-  love.filesystem.setIdentity("Invaders")
   self.filePath = "invaders.lua"
   self.defaultSave = {
     score=0,
