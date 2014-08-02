@@ -12,10 +12,15 @@ function scores()
   local y_offset = 150
   local y = 20
   love.graphics.setFont(global.fonts['tiny'])
-  for k, score in ipairs(global.save:getOrderedScores()) do
-    local msg = k .. '. ' .. score.score ..
-      ' (' .. os.date('%c', score.date) .. ')'
-    love.graphics.print(msg, x, y * k + y_offset)
+  if table.getn(global.save.content.scores) == 0 then
+    local msg = "No scores recored. Let's play!"
+    love.graphics.print(msg, x, y + y_offset)
+  else
+    for k, score in ipairs(global.save:getOrderedScores()) do
+      local msg = k .. '. ' .. score.score ..
+        ' (' .. os.date('%c', score.date) .. ')'
+      love.graphics.print(msg, x, y * k + y_offset)
+    end
   end
 
   love.graphics.print('Press escape to return to menu.', 10, 570)

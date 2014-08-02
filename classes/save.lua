@@ -11,17 +11,31 @@ function Save:initialize()
   }
   self.scoreToKeep = 20
 
-  if not love.filesystem.exists(self.filePath) then
+  if not love.filesystem.exists(self.filePath) or
+      love.filesystem.read(self.filePath) == '' then
     love.filesystem.write(self.filePath, Tserial.pack(self.defaultSave))
-    self.content = self.defaultSave
-  else
-    self:load()
   end
 
+  self:load()
   self.bestScore = self:getBestScore()
 end
+function Save:createNew()
+  love.filesystem.write(self.filePath, Tserial.pack(self.defaultSave))
+end
+function Save:isValid(content)
+  if content.sound == nil then
+    return false
+  elseif content.saves == nil then
+    return false
+  end
+end
 function Save:load()
-    self.content = Tserial.unpack(love.filesystem.read(self.filePath))
+  local content = Tserial.unpack(love.filesystem.read(self.filePath))
+  if not self:isValid(content) then
+    self:createNew()
+    local content = Tserial.unpack(love.filesystem.read(self.filePath))
+  end
+  self.content = content
 end
 function Save:save()
   love.filesystem.write(self.filePath, Tserial.pack(self.content))
@@ -51,7 +65,7 @@ function Save:getOldestScore()
   end
 end
 function Save:getBestScore()
-  if table.getn(self.content.scores) > 0 then
+  if self.content.scores and table.getn(self.content.scores) > 0 then
     local mostRecent = self.content.scores[1]
     for i, score in ipairs(self.content.scores) do
       if score.date > mostRecent.date then
@@ -67,7 +81,9 @@ function Save:getOrderedScores()
   function compare(a, b)
     return a.score > b.score
   end
-  table.sort(self.content.scores, compare)
+  if self.content.scores then
+    table.sort(self.content.scores, compare)
+  end
   return self.content.scores
 end
 
