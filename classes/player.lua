@@ -17,6 +17,9 @@ function Player:initialize()
   self.total_shots = 0
   self.life_remaining = 0
 
+  self.fireRate = 0.1
+  self.fireCounter = self.fireRate
+
   self.untouchable = false
   self.untouchable_counter = 0
   self.untouchable_time = 3
@@ -58,7 +61,10 @@ function Player:shot()
 end
 function Player:keypressed(key)
   if key == " " then
-    self:shot()
+    if self.fireCounter <= 0 then
+      self:shot()
+      self.fireCounter = self.fireRate
+    end
   end
 end
 function Player:swapTouchableColors()
@@ -70,6 +76,10 @@ function Player:swapTouchableColors()
 end
 function Player:update(dt)
   Entity.update(self, dt)
+
+  if self.fireCounter > 0 then
+    self.fireCounter = self.fireCounter - dt
+  end
 
   if self.untouchable and self.untouchable_counter <= self.untouchable_time then
     if self.untouchable_blink_counter > self.untouchable_blink_delay then

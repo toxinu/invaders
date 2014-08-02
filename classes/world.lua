@@ -130,7 +130,7 @@ function World:draw()
 
   -- Bottom informations
   love.graphics.setColor(0, 0, 0, 255)
-  love.graphics.print(love.timer.getFPS(), 100, 100)
+  -- love.graphics.print(love.timer.getFPS(), 100, 100)
   love.graphics.setFont(global.fonts['tiny'])
   love.graphics.print(
     'Score: ' .. self.player.score .. '  ' ..
@@ -277,9 +277,11 @@ function World:update(dt)
           end
         end
         -- Iterate on all builds to check collide
-        for kkk, b in pairs(self.builds) do
-          if b:collide(shot) then
-            table.remove(v.shots, kk)
+        if self.builds_top <= shot.y and shot.y <= self.builds_bottom then
+          for kkk, b in pairs(self.builds) do
+            if b:collide(shot) then
+              table.remove(v.shots, kk)
+            end
           end
         end
       end
