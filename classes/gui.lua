@@ -45,7 +45,6 @@ function Menu:draw()
   if table.getn(self.background_color) == 4 then
     love.graphics.setColor(self.background_color)
     love.graphics.rectangle("fill", 0, 0, 600, 600)
-    love.graphics.setColor(255, 255, 255, 255)
   end
   for i, v in ipairs(self.buttons) do
     v:draw()

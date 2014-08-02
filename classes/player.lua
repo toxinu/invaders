@@ -17,8 +17,8 @@ function Player:initialize()
   self.total_shots = 0
   self.life_remaining = 0
 
-  self.fireRate = 0.1
-  self.fireCounter = self.fireRate
+  self.fire_rate = 0.1
+  self.fire_counter = self.fire_rate
 
   self.untouchable = false
   self.untouchable_counter = 0
@@ -61,9 +61,9 @@ function Player:shot()
 end
 function Player:keypressed(key)
   if key == " " then
-    if self.fireCounter <= 0 then
+    if self.fire_counter <= 0 then
       self:shot()
-      self.fireCounter = self.fireRate
+      self.fire_counter = self.fire_rate
     end
   end
 end
@@ -77,8 +77,8 @@ end
 function Player:update(dt)
   Entity.update(self, dt)
 
-  if self.fireCounter > 0 then
-    self.fireCounter = self.fireCounter - dt
+  if self.fire_counter > 0 then
+    self.fire_counter = self.fire_counter - dt
   end
 
   if self.untouchable and self.untouchable_counter <= self.untouchable_time then

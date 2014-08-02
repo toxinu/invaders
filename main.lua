@@ -3,6 +3,7 @@ local world = require 'classes.world'
 local gui = require 'classes.gui'
 local save = require 'classes.save'
 local utils = require 'libs.utils'
+local scores = require 'classes.scores'
 
 local Save = save.Save
 local Mob = entity.Mob
@@ -55,13 +56,18 @@ function love.load()
     global.world.start = true
     global.gamestate = "play"
   end
+  local scores_callback = function ()
+    global.gamestate = "scores"
+  end
   local quit_callback = function ()
     love.event.quit()
   end
   global.menu:addButton(
     Button:new("Play", "play", global.fonts['small'], 100, 400, play_callback))
   global.menu:addButton(
-    Button:new("Quit", "quit", global.fonts['small'], 100, 430, quit_callback))
+    Button:new("Scores", "scores", global.fonts['small'], 100, 430, scores_callback))
+  global.menu:addButton(
+    Button:new("Quit", "quit", global.fonts['small'], 100, 460, quit_callback))
   global.menu:addButton(
     Button:new(
       "Developed by socketubs",
@@ -107,6 +113,8 @@ end
 function love.draw()
   if global.gamestate == "menu" then
     global.menu:draw()
+  elseif global.gamestate == "scores" then
+    scores()
   else
     global.world:draw()
   end
@@ -119,6 +127,8 @@ function love.keypressed(key, isrepeat)
     if key == "escape" then
       love.event.quit()
     end
+  elseif global.gamestate == "scores" then
+    global.gamestate = "menu"
   end
 end
 

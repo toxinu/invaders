@@ -132,9 +132,10 @@ function World:draw()
   love.graphics.setColor(0, 0, 0, 255)
   -- love.graphics.print(love.timer.getFPS(), 100, 100)
   love.graphics.setFont(global.fonts['tiny'])
+  local bestScore = global.save.bestScore.score or 0
   love.graphics.print(
     'Score: ' .. self.player.score .. '  ' ..
-    'Best: ' .. global.save.content.score .. '  ' ..
+    'Best: ' .. bestScore .. '  ' ..
     'Shots: ' .. self.player.total_shots .. '  ' ..
     'Lifes: ' .. self.player.life_remaining,
     10,
@@ -171,6 +172,7 @@ function World:draw()
     local msg = 'Total score: ' .. self.player.score ..
       '-' .. self.player.total_shots .. 'x5' ..
       '-' .. math.floor(self.elapsed_time) .. 'x5' ..
+      '+' .. self.player.life_remaining .. 'x200' ..
       '=' .. self.total_score .. '!'
     love.graphics.print(msg, 100, 250)
     love.graphics.print('Press escape to continue.', 100, 290)
@@ -208,15 +210,18 @@ function World:update(dt)
       count = count + 1
     end
   end
-  if (count == 0) then
+  if count == 0 and not self.win then
     self.win = true
-    self.total_score = self.player.score - self.player.total_shots * 5 - math.floor(self.elapsed_time) * 5
+    self.total_score = self.player.score - self.player.total_shots * 5 -
+      math.floor(self.elapsed_time) * 5 + self.player.life_remaining * 200
     if self.total_score < 0 then
       self.total_score = 0
     end
-    global.save.content.score = self.total_score
-    global.save.content.time = self.elapsed_time
-    global.save.content.shots = self.player.total_score
+    global.save:addScore({
+      score = self.total_score,
+      life = self.player.life_remaining,
+      time = self.elapsed_time,
+      shots = self.player.total_shots})
     global.save:save()
   end
 
