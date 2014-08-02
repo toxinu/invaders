@@ -86,7 +86,10 @@ function World:populate()
   local y_offset = 100
   local column = 1
   for i = 1, self.mob_number do
-    local mob = Mob:new(global)
+    local mob = Mob:new()
+    if i <= 14 then
+      mob:addImage("assets/images/mob_2.png", 24, 18, 0.5, 2)
+    end
     mob.speed = self.mob_speed
     mob.score = self.mob_score
     mob.x = column * (mob.width + x_offset)

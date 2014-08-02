@@ -52,8 +52,8 @@ local Shot = class('Shot', Entity)
 
 -- Mob
 local Mob = class('Mob', Entity)
-function Mob:initialize(global)
-  Entity.initialize(self, global)
+function Mob:initialize()
+  Entity.initialize(self)
 
   self.speed = 20
   self.shots = {}
@@ -64,7 +64,7 @@ function Mob:initialize(global)
 
   self.shot_counter = 0
   self.shot_delay = 3
-  self:addImage("assets/images/mob.png", 24, 18, 0.5, 2)
+  self:addImage("assets/images/mob_1.png", 24, 18, 0.5, 2)
 end
 function Mob:setDead(value)
   self.dead = value
