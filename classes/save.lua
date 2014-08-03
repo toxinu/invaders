@@ -25,9 +25,10 @@ end
 function Save:isValid(content)
   if content.sound == nil then
     return false
-  elseif content.saves == nil then
+  elseif content.scores == nil then
     return false
   end
+  return true
 end
 function Save:load()
   local content = Tserial.unpack(love.filesystem.read(self.filePath))

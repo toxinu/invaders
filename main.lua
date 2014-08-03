@@ -19,15 +19,11 @@ math.randomseed(os.time())
 
 function love.load()
   global.save = Save:new()
-  global.save:load()
-
   global.version = version
-
   global.fonts = {
     tiny = love.graphics.newFont('assets/fonts/superscript.ttf', 20),
     small = love.graphics.newFont('assets/fonts/superscript.ttf', 30),
     normal = love.graphics.newFont('assets/fonts/superscript.ttf', 50)}
-
   global.sounds = {
     shoot = love.audio.newSource('assets/sfx/shoot.wav', 'static'),
     explosion = love.audio.newSource('assets/sfx/explosion.wav', 'static'),
