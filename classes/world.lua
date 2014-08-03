@@ -199,8 +199,7 @@ function World:getBorderMobs()
   for k, v in pairs(self.mobs) do
     if v.x > right_mob.x then
       right_mob = v
-    end
-    if v.x < left_mob.x then
+    elseif v.x < left_mob.x then
       left_mob = v
     end
   end
