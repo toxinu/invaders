@@ -140,7 +140,8 @@ function World:draw()
     'Score: ' .. self.player.score .. '  ' ..
     'Best: ' .. bestScore .. '  ' ..
     'Shots: ' .. self.player.total_shots .. '  ' ..
-    'Lifes: ' .. self.player.life_remaining,
+    'Lifes: ' .. self.player.life_remaining .. '  ' ..
+    'Time: ' .. math.ceil(self.elapsed_time),
     10,
     self.height - 35)
 
@@ -160,9 +161,9 @@ function World:draw()
     love.graphics.rectangle("fill", 0, 0, 600, 600)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(global.fonts['normal'])
-    love.graphics.print('You loose!', 100, 200)
+    love.graphics.print('You loose!', 75, 150)
     love.graphics.setFont(global.fonts['tiny'])
-    love.graphics.print('Press escape to continue.', 100, 280)
+    love.graphics.print('Press escape to continue.', 75, 280)
   end
 
   if self.win then
@@ -170,15 +171,21 @@ function World:draw()
     love.graphics.rectangle("fill", 0, 0, 600, 600)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(global.fonts['normal'])
-    love.graphics.print('You win!', 100, 200)
+    love.graphics.print('You win!', 75, 150)
     love.graphics.setFont(global.fonts['tiny'])
-    local msg = 'Total score: ' .. self.player.score ..
-      '-' .. self.player.total_shots .. 'x5' ..
-      '-' .. math.floor(self.elapsed_time) .. 'x5' ..
-      '+' .. self.player.life_remaining .. 'x200' ..
-      '=' .. self.total_score .. '!'
-    love.graphics.print(msg, 100, 250)
-    love.graphics.print('Press escape to continue.', 100, 290)
+
+    love.graphics.print('Score ', 75, 230)
+    love.graphics.print('  ' .. self.player.score, 170, 230)
+    love.graphics.print('Shots', 75, 250)
+    love.graphics.print('- ' .. self.player.total_shots .. 'x5', 170, 250)
+    love.graphics.print('Time', 75, 270)
+    love.graphics.print('- ' .. math.floor(self.elapsed_time) .. 'x5', 170, 270)
+    love.graphics.print('Life', 75, 290)
+    love.graphics.print('+ ' .. self.player.life_remaining .. 'x200', 170, 290)
+    love.graphics.print('--------', 170, 310)
+    love.graphics.print('Total      ' .. self.total_score, 75, 330)
+
+    love.graphics.print('Press escape to continue.', 75, 450)
   end
 
   if global.gamestate == "overlay" then

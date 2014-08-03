@@ -16,7 +16,7 @@ function scores()
     local msg = "No scores recored. Let's play!"
     love.graphics.print(msg, x, y + y_offset)
   else
-    for k, score in ipairs(global.save:getOrderedScores()) do
+    for k, score in ipairs(global.save.orderedScores) do
       local msg = k .. '. ' .. score.score ..
         ' (' .. os.date('%c', score.date) .. ')'
       love.graphics.print(msg, x, y * k + y_offset)

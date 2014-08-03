@@ -9,7 +9,7 @@ function Save:initialize()
     scores={},
     sound=true
   }
-  self.scoreToKeep = 20
+  self.scoreToKeep = 15
 
   if not love.filesystem.exists(self.filePath) or
       love.filesystem.read(self.filePath) == '' then
@@ -18,6 +18,7 @@ function Save:initialize()
 
   self:load()
   self.bestScore = self:getBestScore()
+  self.orderedScores = self:getOrderedScores()
 end
 function Save:createNew()
   love.filesystem.write(self.filePath, Tserial.pack(self.defaultSave))
@@ -49,6 +50,7 @@ function Save:addScore(score)
   score.date = os.time(dt)
   table.insert(self.content.scores, score)
   self.bestScore = self:getBestScore()
+  self.orderedScores = self:getOrderedScores()
 end
 function Save:getOldestScore()
   if table.getn(self.content.scores) > 0 then
